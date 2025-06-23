@@ -1,5 +1,6 @@
 {
     "name": "peso/openexchangerates-service",
+    "license": "MIT",
     "config": {
         "allow-plugins": {
             "dealerdirect/phpcodesniffer-composer-installer": true,
