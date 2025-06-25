@@ -19,6 +19,7 @@ use Peso\Core\Services\SDK\Cache\NullCache;
 use Peso\Core\Services\SDK\Exceptions\HttpFailureException;
 use Peso\Core\Services\SDK\HTTP\DiscoveredHttpClient;
 use Peso\Core\Services\SDK\HTTP\DiscoveredRequestFactory;
+use Peso\Core\Services\SDK\HTTP\UserAgentHelper;
 use Peso\Core\Types\Decimal;
 use Peso\Services\OpenExchangeRatesService\AppType;
 use Psr\Http\Client\ClientInterface;
@@ -113,6 +114,11 @@ final readonly class OpenExchangeRatesService implements ExchangeRateServiceInte
         }
 
         $request = $this->requestFactory->createRequest('GET', $url);
+        $request = $request->withHeader('User-Agent', UserAgentHelper::buildUserAgentString(
+            'OpenExchangeRatesClient',
+            'peso/openexchangerates-service',
+            $request->hasHeader('User-Agent') ? $request->getHeaderLine('User-Agent') : null,
+        ));
         $response = $this->httpClient->sendRequest($request);
 
         if ($response->getStatusCode() === 400) {
