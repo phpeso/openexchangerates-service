@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Peso\Services;
 
+use Arokettu\Date\Date;
 use DateInterval;
 use Error;
 use Override;
@@ -72,7 +73,7 @@ final readonly class OpenExchangeRatesService implements ExchangeRateServiceInte
         $rates = $this->retrieveRates($url);
 
         return isset($rates[$request->quoteCurrency]) ?
-            new SuccessResponse(new Decimal((string)$rates[$request->quoteCurrency])) :
+            new SuccessResponse(Decimal::init($rates[$request->quoteCurrency]), Date::today()) :
             new ErrorResponse(ConversionRateNotFoundException::fromRequest($request));
     }
 
@@ -97,7 +98,7 @@ final readonly class OpenExchangeRatesService implements ExchangeRateServiceInte
         $rates = $this->retrieveRates($url);
 
         return isset($rates[$request->quoteCurrency]) ?
-            new SuccessResponse(new Decimal((string)$rates[$request->quoteCurrency])) :
+            new SuccessResponse(Decimal::init($rates[$request->quoteCurrency]), $request->date) :
             new ErrorResponse(ConversionRateNotFoundException::fromRequest($request));
     }
 
