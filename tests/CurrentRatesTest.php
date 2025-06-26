@@ -8,7 +8,7 @@ use Arokettu\Date\Date;
 use Peso\Core\Exceptions\ConversionRateNotFoundException;
 use Peso\Core\Requests\CurrentExchangeRateRequest;
 use Peso\Core\Responses\ErrorResponse;
-use Peso\Core\Responses\SuccessResponse;
+use Peso\Core\Responses\ExchangeRateResponse;
 use Peso\Core\Services\SDK\Exceptions\HttpFailureException;
 use Peso\Services\OpenExchangeRatesService;
 use Peso\Services\OpenExchangeRatesService\AppType;
@@ -28,17 +28,17 @@ class CurrentRatesTest extends TestCase
         $service = new OpenExchangeRatesService('xxxfreexxx', AppType::Free, cache: $cache, httpClient: $http);
 
         $response = $service->send(new CurrentExchangeRateRequest('USD', 'EUR'));
-        self::assertInstanceOf(SuccessResponse::class, $response);
+        self::assertInstanceOf(ExchangeRateResponse::class, $response);
         self::assertEquals('0.857649', $response->rate->value);
         self::assertEquals(Date::today(), $response->date);
 
         $response = $service->send(new CurrentExchangeRateRequest('USD', 'PHP'));
-        self::assertInstanceOf(SuccessResponse::class, $response);
+        self::assertInstanceOf(ExchangeRateResponse::class, $response);
         self::assertEquals('56.742298', $response->rate->value);
         self::assertEquals(Date::today(), $response->date->toString());
 
         $response = $service->send(new CurrentExchangeRateRequest('USD', 'JPY'));
-        self::assertInstanceOf(SuccessResponse::class, $response);
+        self::assertInstanceOf(ExchangeRateResponse::class, $response);
         self::assertEquals('145.24400539', $response->rate->value);
         self::assertEquals(Date::today(), $response->date->toString());
 
@@ -104,12 +104,12 @@ class CurrentRatesTest extends TestCase
         ], cache: $cache, httpClient: $http);
 
         $response = $service->send(new CurrentExchangeRateRequest('USD', 'EUR'));
-        self::assertInstanceOf(SuccessResponse::class, $response);
+        self::assertInstanceOf(ExchangeRateResponse::class, $response);
         self::assertEquals('0.857649', $response->rate->value);
         self::assertEquals(Date::today(), $response->date);
 
         $response = $service->send(new CurrentExchangeRateRequest('USD', 'PHP'));
-        self::assertInstanceOf(SuccessResponse::class, $response);
+        self::assertInstanceOf(ExchangeRateResponse::class, $response);
         self::assertEquals('56.742298', $response->rate->value);
         self::assertEquals(Date::today(), $response->date);
 

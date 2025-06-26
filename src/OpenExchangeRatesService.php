@@ -13,7 +13,7 @@ use Peso\Core\Exceptions\RequestNotSupportedException;
 use Peso\Core\Requests\CurrentExchangeRateRequest;
 use Peso\Core\Requests\HistoricalExchangeRateRequest;
 use Peso\Core\Responses\ErrorResponse;
-use Peso\Core\Responses\SuccessResponse;
+use Peso\Core\Responses\ExchangeRateResponse;
 use Peso\Core\Services\ExchangeRateServiceInterface;
 use Peso\Core\Services\SDK\Cache\NullCache;
 use Peso\Core\Services\SDK\Exceptions\HttpFailureException;
@@ -46,7 +46,7 @@ final readonly class OpenExchangeRatesService implements ExchangeRateServiceInte
      * @inheritDoc
      */
     #[Override]
-    public function send(object $request): SuccessResponse|ErrorResponse
+    public function send(object $request): ExchangeRateResponse|ErrorResponse
     {
         if ($request instanceof CurrentExchangeRateRequest) {
             return self::performCurrentRequest($request);
@@ -57,7 +57,7 @@ final readonly class OpenExchangeRatesService implements ExchangeRateServiceInte
         return new ErrorResponse(RequestNotSupportedException::fromRequest($request));
     }
 
-    private function performCurrentRequest(CurrentExchangeRateRequest $request): ErrorResponse|SuccessResponse
+    private function performCurrentRequest(CurrentExchangeRateRequest $request): ErrorResponse|ExchangeRateResponse
     {
         if ($this->appType === AppType::Free && $request->baseCurrency !== 'USD') {
             return new ErrorResponse(ConversionRateNotFoundException::fromRequest($request));
@@ -74,11 +74,11 @@ final readonly class OpenExchangeRatesService implements ExchangeRateServiceInte
         $rates = $this->retrieveRates($url);
 
         return isset($rates[$request->quoteCurrency]) ?
-            new SuccessResponse(Decimal::init($rates[$request->quoteCurrency]), Date::today()) :
+            new ExchangeRateResponse(Decimal::init($rates[$request->quoteCurrency]), Date::today()) :
             new ErrorResponse(ConversionRateNotFoundException::fromRequest($request));
     }
 
-    private function performHistoricalRequest(HistoricalExchangeRateRequest $request): ErrorResponse|SuccessResponse
+    private function performHistoricalRequest(HistoricalExchangeRateRequest $request): ErrorResponse|ExchangeRateResponse
     {
         if ($this->appType === AppType::Free && $request->baseCurrency !== 'USD') {
             return new ErrorResponse(ConversionRateNotFoundException::fromRequest($request));
@@ -99,7 +99,7 @@ final readonly class OpenExchangeRatesService implements ExchangeRateServiceInte
         $rates = $this->retrieveRates($url);
 
         return isset($rates[$request->quoteCurrency]) ?
-            new SuccessResponse(Decimal::init($rates[$request->quoteCurrency]), $request->date) :
+            new ExchangeRateResponse(Decimal::init($rates[$request->quoteCurrency]), $request->date) :
             new ErrorResponse(ConversionRateNotFoundException::fromRequest($request));
     }
 

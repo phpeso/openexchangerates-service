@@ -35,7 +35,7 @@
     },
     "require": {
         "php": "^8.2",
-        "peso/core": "^0.10.2",
+        "peso/core": "^0.10.3 || ^1.0",
         "psr/http-client": "^1",
         "psr/http-factory": "^1",
         "psr/simple-cache": "^1 || ^2 || ^3"
