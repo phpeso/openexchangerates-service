@@ -49,7 +49,7 @@ echo $converter->convert('12500', 'USD', 'EUR', 2), PHP_EOL;
 
 ## Documentation
 
-Read the full documentation here: <https://phpeso.org/v0.x/services/openexchangerates.html>
+Read the full documentation here: <https://phpeso.org/v1.x/services/openexchangerates.html>
 
 ## Support
 
