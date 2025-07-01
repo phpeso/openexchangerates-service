@@ -17,7 +17,7 @@ final readonly class MockClient
 
         $client->on(
             new RequestMatcher('/api/latest.json', 'openexchangerates.org', ['GET'], ['https']),
-            function (RequestInterface $request) {
+            static function (RequestInterface $request) {
                 $query = $request->getUri()->getQuery();
                 switch ($request->getUri()->getQuery()) {
                     case 'app_id=xxxfreexxx&base=USD':
@@ -32,11 +32,11 @@ final readonly class MockClient
                     default:
                         throw new \LogicException('Non-mocked query: ' . $query);
                 }
-            }
+            },
         );
         $client->on(
             new RequestMatcher('/api/historical/2025-06-13.json', 'openexchangerates.org', ['GET'], ['https']),
-            function (RequestInterface $request) {
+            static function (RequestInterface $request) {
                 $query = $request->getUri()->getQuery();
                 switch ($request->getUri()->getQuery()) {
                     case 'app_id=xxxfreexxx&base=USD':
@@ -51,11 +51,11 @@ final readonly class MockClient
                     default:
                         throw new \LogicException('Non-mocked query: ' . $query);
                 }
-            }
+            },
         );
         $client->on(
             new RequestMatcher('/api/historical/2035-01-01.json', 'openexchangerates.org', ['GET'], ['https']),
-            function (RequestInterface $request) {
+            static function (RequestInterface $request) {
                 $query = $request->getUri()->getQuery();
                 switch ($request->getUri()->getQuery()) {
                     case 'app_id=xxxfreexxx&base=USD':
@@ -64,7 +64,7 @@ final readonly class MockClient
                     default:
                         throw new \LogicException('Non-mocked query: ' . $query);
                 }
-            }
+            },
         );
 
         return $client;

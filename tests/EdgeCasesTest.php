@@ -15,7 +15,7 @@ use Peso\Services\OpenExchangeRatesService\AppType;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 
-class EdgeCasesTest extends TestCase
+final class EdgeCasesTest extends TestCase
 {
     public function testInvalidRequest(): void
     {
@@ -24,7 +24,7 @@ class EdgeCasesTest extends TestCase
         $response = $service->send(new stdClass());
         self::assertInstanceOf(ErrorResponse::class, $response);
         self::assertInstanceOf(RequestNotSupportedException::class, $response->exception);
-        self::assertEquals('Unrecognized request type: "stdClass"', $response->exception->getMessage());
+        self::assertEquals('Unsupported request type: "stdClass"', $response->exception->getMessage());
     }
 
     public function testHttpFailure(): void

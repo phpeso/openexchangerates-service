@@ -8,13 +8,13 @@ use Arokettu\Date\Date;
 use DateInterval;
 use Error;
 use Override;
-use Peso\Core\Exceptions\ConversionRateNotFoundException;
+use Peso\Core\Exceptions\ExchangeRateNotFoundException;
 use Peso\Core\Exceptions\RequestNotSupportedException;
 use Peso\Core\Requests\CurrentExchangeRateRequest;
 use Peso\Core\Requests\HistoricalExchangeRateRequest;
 use Peso\Core\Responses\ErrorResponse;
 use Peso\Core\Responses\ExchangeRateResponse;
-use Peso\Core\Services\ExchangeRateServiceInterface;
+use Peso\Core\Services\PesoServiceInterface;
 use Peso\Core\Services\SDK\Cache\NullCache;
 use Peso\Core\Services\SDK\Exceptions\HttpFailureException;
 use Peso\Core\Services\SDK\HTTP\DiscoveredHttpClient;
@@ -26,7 +26,7 @@ use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\SimpleCache\CacheInterface;
 
-final readonly class OpenExchangeRatesService implements ExchangeRateServiceInterface
+final readonly class OpenExchangeRatesService implements PesoServiceInterface
 {
     private const ENDPOINT_LATEST = 'https://openexchangerates.org/api/latest.json?%s';
     private const ENDPOINT_HISTORICAL = 'https://openexchangerates.org/api/historical/%s.json?%s';
@@ -60,7 +60,7 @@ final readonly class OpenExchangeRatesService implements ExchangeRateServiceInte
     private function performCurrentRequest(CurrentExchangeRateRequest $request): ErrorResponse|ExchangeRateResponse
     {
         if ($this->appType === AppType::Free && $request->baseCurrency !== 'USD') {
-            return new ErrorResponse(ConversionRateNotFoundException::fromRequest($request));
+            return new ErrorResponse(ExchangeRateNotFoundException::fromRequest($request));
         }
 
         $query = [
@@ -75,13 +75,14 @@ final readonly class OpenExchangeRatesService implements ExchangeRateServiceInte
 
         return isset($rates[$request->quoteCurrency]) ?
             new ExchangeRateResponse(Decimal::init($rates[$request->quoteCurrency]), Date::today()) :
-            new ErrorResponse(ConversionRateNotFoundException::fromRequest($request));
+            new ErrorResponse(ExchangeRateNotFoundException::fromRequest($request));
     }
 
-    private function performHistoricalRequest(HistoricalExchangeRateRequest $request): ErrorResponse|ExchangeRateResponse
-    {
+    private function performHistoricalRequest(
+        HistoricalExchangeRateRequest $request
+    ): ErrorResponse|ExchangeRateResponse {
         if ($this->appType === AppType::Free && $request->baseCurrency !== 'USD') {
-            return new ErrorResponse(ConversionRateNotFoundException::fromRequest($request));
+            return new ErrorResponse(ExchangeRateNotFoundException::fromRequest($request));
         }
 
         $query = [
@@ -93,14 +94,14 @@ final readonly class OpenExchangeRatesService implements ExchangeRateServiceInte
         $url = \sprintf(
             self::ENDPOINT_HISTORICAL,
             $request->date->toString(),
-            http_build_query($query, encoding_type: PHP_QUERY_RFC3986)
+            http_build_query($query, encoding_type: PHP_QUERY_RFC3986),
         );
 
         $rates = $this->retrieveRates($url);
 
         return isset($rates[$request->quoteCurrency]) ?
             new ExchangeRateResponse(Decimal::init($rates[$request->quoteCurrency]), $request->date) :
-            new ErrorResponse(ConversionRateNotFoundException::fromRequest($request));
+            new ErrorResponse(ExchangeRateNotFoundException::fromRequest($request));
     }
 
     private function retrieveRates(string $url): array|false
@@ -130,7 +131,7 @@ final readonly class OpenExchangeRatesService implements ExchangeRateServiceInte
 
         $rates = json_decode(
             (string)$response->getBody(),
-            flags: JSON_THROW_ON_ERROR | JSON_OBJECT_AS_ARRAY
+            flags: JSON_THROW_ON_ERROR | JSON_OBJECT_AS_ARRAY,
         )['rates'] ?? throw new Error('No rates in the response');
 
         $this->cache->set($cacheKey, $rates, $this->ttl);

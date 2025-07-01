@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Peso\Services\Tests;
 
 use Arokettu\Date\Date;
-use Peso\Core\Exceptions\ConversionRateNotFoundException;
+use Peso\Core\Exceptions\ExchangeRateNotFoundException;
 use Peso\Core\Requests\CurrentExchangeRateRequest;
 use Peso\Core\Responses\ErrorResponse;
 use Peso\Core\Responses\ExchangeRateResponse;
@@ -18,7 +18,7 @@ use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\Cache\Psr16Cache;
 
 // phpcs:disable Generic.Files.LineLength.TooLong
-class CurrentRatesTest extends TestCase
+final class CurrentRatesTest extends TestCase
 {
     public function testRateFree(): void
     {
@@ -59,17 +59,17 @@ class CurrentRatesTest extends TestCase
 
         $response = $service->send(new CurrentExchangeRateRequest('PHP', 'USD'));
         self::assertInstanceOf(ErrorResponse::class, $response);
-        self::assertInstanceOf(ConversionRateNotFoundException::class, $response->exception);
+        self::assertInstanceOf(ExchangeRateNotFoundException::class, $response->exception);
         self::assertEquals('Unable to find exchange rate for PHP/USD', $response->exception->getMessage());
 
         $response = $service->send(new CurrentExchangeRateRequest('PHP', 'EUR'));
         self::assertInstanceOf(ErrorResponse::class, $response);
-        self::assertInstanceOf(ConversionRateNotFoundException::class, $response->exception);
+        self::assertInstanceOf(ExchangeRateNotFoundException::class, $response->exception);
         self::assertEquals('Unable to find exchange rate for PHP/EUR', $response->exception->getMessage());
 
         $response = $service->send(new CurrentExchangeRateRequest('PHP', 'JPY'));
         self::assertInstanceOf(ErrorResponse::class, $response);
-        self::assertInstanceOf(ConversionRateNotFoundException::class, $response->exception);
+        self::assertInstanceOf(ExchangeRateNotFoundException::class, $response->exception);
         self::assertEquals('Unable to find exchange rate for PHP/JPY', $response->exception->getMessage());
 
         self::assertCount(0, $http->getRequests()); // no requests
@@ -84,7 +84,7 @@ class CurrentRatesTest extends TestCase
 
         self::expectException(HttpFailureException::class);
         self::expectExceptionMessage(
-            '"Changing the API `base` currency is available for Developer, Enterprise and Unlimited plan clients. Please upgrade, or contact support@openexchangerates.org with any questions."'
+            '"Changing the API `base` currency is available for Developer, Enterprise and Unlimited plan clients. Please upgrade, or contact support@openexchangerates.org with any questions."',
         );
         $service->send(new CurrentExchangeRateRequest('PHP', 'USD'));
     }
@@ -116,7 +116,7 @@ class CurrentRatesTest extends TestCase
         // not included
         $response = $service->send(new CurrentExchangeRateRequest('USD', 'JPY'));
         self::assertInstanceOf(ErrorResponse::class, $response);
-        self::assertInstanceOf(ConversionRateNotFoundException::class, $response->exception);
+        self::assertInstanceOf(ExchangeRateNotFoundException::class, $response->exception);
         self::assertEquals('Unable to find exchange rate for USD/JPY', $response->exception->getMessage());
 
         self::assertCount(1, $http->getRequests()); // subsequent requests are cached
