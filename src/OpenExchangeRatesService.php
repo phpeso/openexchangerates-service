@@ -79,7 +79,7 @@ final readonly class OpenExchangeRatesService implements PesoServiceInterface
     }
 
     private function performHistoricalRequest(
-        HistoricalExchangeRateRequest $request
+        HistoricalExchangeRateRequest $request,
     ): ErrorResponse|ExchangeRateResponse {
         if ($this->appType === AppType::Free && $request->baseCurrency !== 'USD') {
             return new ErrorResponse(ExchangeRateNotFoundException::fromRequest($request));
