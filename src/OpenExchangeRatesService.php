@@ -104,7 +104,7 @@ final readonly class OpenExchangeRatesService implements PesoServiceInterface
             new ErrorResponse(ExchangeRateNotFoundException::fromRequest($request));
     }
 
-    private function retrieveRates(string $url): array|false
+    private function retrieveRates(string $url): array
     {
         $cacheKey = hash('sha1', $url);
 
