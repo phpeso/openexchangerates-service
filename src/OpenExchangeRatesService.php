@@ -106,7 +106,7 @@ final readonly class OpenExchangeRatesService implements PesoServiceInterface
 
     private function retrieveRates(string $url): array
     {
-        $cacheKey = hash('sha1', $url);
+        $cacheKey = 'peso|oxr|' . hash('sha1', $url);
 
         $rates = $this->cache->get($cacheKey);
 
