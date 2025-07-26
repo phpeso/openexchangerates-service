@@ -2,6 +2,13 @@
 
 ## 1.x
 
+### 1.0.2
+
+*Jul 26, 2025*
+
+* Added prefixes to cache keys
+* Removed dev configs and other junk from the package
+
 ### 1.0.1
 
 *Jul 1, 2025*
